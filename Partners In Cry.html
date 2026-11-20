@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Partner In Cry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Readex+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg: #f6eef0;
+            --ink: #000000;
+            --soft: #000000;
+            --card: #fff;
+            --rose: #e0567a;
+            --tear: #4aa3c7;
+            --line: #e2d3da;
+            --ground: #d8c4cf;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+        
+        @media (prefers-color-scheme:dark) {
+             :root:not([data-theme="light"]) {
+                --bg: #171227;
+                --ink: #f3eaf2;
+                --soft: #a79bc0;
+                --card: #241c3a;
+                --rose: #ff8fa8;
+                --tear: #7cc8e8;
+                --line: #35294f;
+                --ground: #2e2347
+            }
+        }
+        
+         :root[data-theme="dark"] {
+            --bg: #171227;
+            --ink: #f3eaf2;
+            --soft: #a79bc0;
+            --card: #241c3a;
+            --rose: #ff8fa8;
+            --tear: #7cc8e8;
+            --line: #35294f;
+            --ground: #2e2347
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        [hidden] {
+            display: none!important
+        }
+        
+        html {
+            scroll-padding-top: env(safe-area-inset-top, 0px)
+        }
+        
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Readex Pro", Tahoma, sans-serif;
+            line-height: 1.7;
+            min-height: 100vh
+        }
+        
+        main {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 32px 18px 48px
+        }
+        
+        h1 {
+            font-family: "Press Start 2P", monospace;
+            font-size: 1.05rem;
+            line-height: 1.9;
+            text-align: center;
+            margin: 0 0 8px
+        }
+        
+        .hint {
+            text-align: center;
+            color: var(--soft);
+            margin: 0 0 26px;
+            font-weight: 300
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px
+        }
+        
+        .card {
+            background: var(--card);
+            border: 3px solid var(--line);
+            border-radius: 14px;
+            padding: 18px 8px 14px;
+            cursor: pointer;
+            color: var(--ink);
+            font: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px
+        }
+        
+        .card[data-k="omar"]:hover {
+            border-color: var(--tear);
+            background: linear-gradient(to bottom, var(--card) 0%, var(--tear) 100%)
+        }
+        
+        .card[data-k="reaam"]:hover {
+            border-color: var(--rose);
+            background: linear-gradient(to bottom, var(--card) 0%, var(--rose) 100%)
+        }
+        
+        .card:focus-visible,
+        .ring:focus-visible,
+        .back:focus-visible {
+            outline: 3px solid var(--tear);
+            outline-offset: 3px
+        }
+        
+        canvas {
+            image-rendering: pixelated;
+            display: block
+        }
+        
+        .card canvas {
+            width: min(34vw, 140px);
+            height: auto
+        }
+        
+        @keyframes hoverBob {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+        
+        .card:hover canvas {
+            animation: hoverBob 0.8s ease-in-out infinite;
+        }
+        
+        .nm {
+            font-family: "Press Start 2P", monospace;
+            font-size: .8rem
+        }
+        
+        .stage {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 6px dashed var(--ground);
+            padding: 70px 0 0;
+            margin-top: 20px;
+            position: relative
+        }
+        
+        .char {
+            width: min(38vw, 170px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 1.3s steps(10);
+            position: relative
+        }
+        
+        .char canvas {
+            width: 100%;
+            height: auto;
+            animation: bob 1.2s steps(2) infinite
+        }
+        
+        .char.cry canvas {
+            animation: shake .25s steps(2) infinite
+        }
+        
+        .char.walk canvas {
+            animation: bob .3s steps(2) infinite
+        }
+        
+        .char.p {
+            z-index: 2
+        }
+        
+        .char .nm {
+            margin: 8px 0 10px
+        }
+        
+        .bang {
+            position: absolute;
+            top: -46px;
+            left: 50%;
+            margin-left: -10px;
+            font-family: "Press Start 2P", monospace;
+            font-size: 1.7rem;
+            color: var(--rose);
+            animation: pop .4s steps(4)
+        }
+        
+        @keyframes bob {
+            50% {
+                transform: translateY(-4px)
+            }
+        }
+        
+        @keyframes shake {
+            50% {
+                transform: translateX(3px)
+            }
+        }
+        
+        @keyframes pop {
+            from {
+                transform: translateY(14px);
+                opacity: 0
+            }
+        }
+        
+        .ctl {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            gap: 14px
+        }
+        
+        .ring {
+            --p: 0;
+            width: 104px;
+            height: 104px;
+            border: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            background: conic-gradient(var(--tear) calc(var(--p)*1%), var(--line) 0);
+            display: grid;
+            place-items: center;
+            position: relative;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent
+        }
+        
+        .ring::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            background: var(--card)
+        }
+        
+        .ring canvas {
+            position: relative;
+            width: 46px;
+            height: auto
+        }
+        
+        .ring.heart {
+            background: var(--rose);
+            animation: beat .8s steps(2) infinite
+        }
+        
+        @keyframes beat {
+            50% {
+                transform: scale(1.08)
+            }
+        }
+        
+        .cap {
+            text-align: center;
+            color: var(--soft);
+            min-height: 3.4em;
+            margin: 0;
+            max-width: 32ch
+        }
+        
+        .back {
+            font: inherit;
+            background: none;
+            border: 2px solid var(--line);
+            color: var(--ink);
+            padding: 8px 22px;
+            border-radius: 999px;
+            cursor: pointer
+        }
+        
+        .fh {
+            position: absolute;
+            width: 30px;
+            height: auto;
+            left: 50%;
+            top: 10px;
+            animation: up 2.4s steps(12) forwards;
+            pointer-events: none;
+            z-index: 5
+        }
+        
+        @keyframes up {
+            to {
+                transform: translateY(-120px);
+                opacity: 0
+            }
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            .char,
+            .char canvas,
+            .ring.heart,
+            .fh,
+            .bang {
+                animation: none!important;
+                transition: none!important
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <section id="pick">
+            <h1>Choose your<br>character</h1>
+            <p class="hint">Pick who cries first</p>
+            <div class="cards">
+                <button class="card" data-k="omar"><canvas width="20" height="20"></canvas><span class="nm">Omar</span></button>
+                <button class="card" data-k="reaam"><canvas width="20" height="17"></canvas><span class="nm">Reaam</span></button>
+            </div>
+        </section>
+        <section id="play" hidden>
+            <div class="stage" id="stage">
+                <div class="char" id="a"><canvas width="20" height="17"></canvas><span class="nm"></span></div>
+                <div class="char p" id="b"><span class="bang" id="bang" hidden>!</span><canvas width="20" height="17"></canvas><span class="nm"></span></div>
+            </div>
+            <div class="ctl">
+                <button class="ring" id="btn" aria-label="Tear"><canvas id="ico" width="9" height="11"></canvas></button>
+                <p class="cap" id="cap"></p>
+                <button class="back" id="back" hidden>Play again</button>
+            </div>
+        </section>
+    </main>
+    <script>
+        // ===== character looks =====
+        const CH = {
+            omar: {
+                id: "omar",
+                name: "Omar",
+                tall: true,
+                pal: {
+                    H: "#24212e",
+                    S: "#fde9e0",
+                    B: "#8a8d99",
+                    D: "#6a6d7a",
+                    P: "#34343f",
+                    C: "#f4a3a6",
+                    E: "#1d1630"
+                }
+            },
+            reaam: {
+                id: "reaam",
+                name: "Reaam",
+                tall: false,
+                pal: {
+                    H: "#24212e",
+                    S: "#fde9e0",
+                    B: "#2d2d38",
+                    D: "#3b3b48",
+                    P: "#bcd0ea",
+                    C: "#f4a3a6",
+                    E: "#1d1630",
+                    R: "#d92f3f"
+                }
+            }
+        };
+        const BASE = {
+            K: "#1d1630",
+            W: "#ffffff",
+            T: "#7cc8e8",
+            M: "#b0475a",
+            R: "#ff6f91"
+        };
+        const TPL = [
+            "....KKKKKK....",
+            "...KHHHHHHK...",
+            "..KHHHHHHHHK..",
+            ".KHHHSSSSHHHK.",
+            ".KHSSSSSSSSHK.",
+            ".KSSSSSSSSSSK.",
+            ".KSSSSSSSSSSK.",
+            ".KSCSSSSSSCSK.",
+            ".KSSSSMMSSSSK.",
+            "..KSSSSSSSSK..",
+            "...KKBBBBKK...",
+            "..KBBBBBBBBK..",
+            ".KSBBBBBBBBSK.",
+            ".KSBBBBBBBBSK.",
+            ".KPPPPPPPPPPK.",
+            "..KPPPKKPPPK..",
+            "..KKKK..KKKK.."
+        ];
+        const M = 3;
+
+        function build(c, state, fr, dir) {
+            const o = c.tall ? 3 : 0;
+            const T = TPL.slice();
+            for (let i = 0; i < o; i++) T.splice(13, 0, TPL[13]);
+            const g = T.map(r => (".".repeat(M) + r + ".".repeat(M)).split(""));
+            const set = (r, x, k) => {
+                if (g[r] && x + M >= 0 && x + M < g[r].length) g[r][x + M] = k
+            };
+            const get = (r, x) => g[r][x + M];
+            if (c.id === "omar") {
+                for (let r = 4; r <= 8; r++) {
+                    set(r, 1, "H");
+                    set(r, 12, "H");
+                    set(r, 0, "K");
+                    set(r, 13, "K")
+                }
+                set(2, 6, "S");
+                set(2, 7, "S");
+                set(3, 4, "S");
+                set(3, 9, "S");
+                [5, 6, 7].forEach(r => {
+                    set(r, 2, "H");
+                    set(r, 11, "H")
+                });
+                set(10, 5, "D");
+                set(10, 8, "D");
+                set(10, 6, "S");
+                set(10, 7, "S");
+                for (let x = 3; x <= 10; x++) set(13 + o, x, "D");
+            } else {
+                set(3, 5, "H");
+                set(3, 8, "H");
+                set(4, 4, "H");
+                set(4, 9, "H");
+                for (let r = 4; r <= 8; r++) {
+                    set(r, 1, "H");
+                    set(r, 12, "H")
+                }
+                set(5, 0, "K");
+                set(6, 0, "K");
+                set(5, 13, "K");
+                set(6, 13, "K");
+                [7, 8].forEach(r => {
+                    set(r, 0, "H");
+                    set(r, 13, "H")
+                });
+                set(8, 2, "H");
+                set(8, 11, "H");
+                for (let r = 9; r <= 11; r++) {
+                    set(r, 1, "H");
+                    set(r, 12, "H");
+                    set(r, 0, "K");
+                    set(r, 13, "K")
+                }
+                set(11, 0, "H");
+                set(11, 13, "H");
+                for (let x = 4; x <= 9; x++) set(10, x, "R");
+                for (let x = 7; x <= 9; x++) set(11, x, "R");
+                set(12, 8, "R");
+                set(12, 9, "R");
+                set(13, 8, "R");
+                set(13, 9, "R");
+            }
+            for (let r = 12; r <= 12 + o; r++) {
+                set(r, 2, "B");
+                set(r, 11, "B")
+            }
+            set(13 + o, 2, "S");
+            set(13 + o, 11, "S");
+            const open = () => {
+                set(8, 6, "M");
+                set(8, 7, "M");
+                set(9, 6, "M");
+                set(9, 7, "M")
+            };
+            if (state !== "away")[3, 9].forEach(cx => {
+                if (state === "cry" || state === "hugcry") {
+                    set(5, cx, "K");
+                    set(5, cx + 1, "K")
+                } else if (state === "happy" || state === "hug") {
+                    set(6, cx, "K");
+                    set(6, cx + 1, "K");
+                    set(5, cx, "S");
+                    set(5, cx + 1, "S")
+                } else {
+                    set(5, cx, "W");
+                    set(5, cx + 1, "E");
+                    set(6, cx, "E");
+                    set(6, cx + 1, "E")
+                }
+            });
+            if (state === "cry" || state === "hugcry") {
+                open();
+                [
+                    [3, 0],
+                    [3, 3],
+                    [10, 0],
+                    [10, 3]
+                ].forEach(([col, k]) => {
+                    const r = 6 + ((fr + k) % 7);
+                    if ("SCB".includes(get(r, col))) set(r, col, "T")
+                })
+            }
+            if (state === "notice") open();
+            if (state === "happy" || state === "hug" || state === "hugcry") {
+                [3, 4, 9, 10].forEach(x => set(7, x, "C"))
+            }
+            if (state === "away") {
+                for (let r = 2; r <= 8; r++)
+                    for (let x = 2; x <= 11; x++)
+                        if ("SCEWM".includes(get(r, x))) set(r, x, "H");
+                if (c.id === "reaam") {
+                    for (let x = 3; x <= 10; x++) set(9, x, "H");
+                    for (let r = 10; r <= 11; r++) {
+                        set(r, 3, "H");
+                        set(r, 10, "H")
+                    }
+                } else {
+                    [3, 4, 9, 10].forEach(x => set(9, x, "H"))
+                }
+            }
+            if (state === "hug" || state === "hugcry") {
+                const r1 = 11 + o;
+                const xs = dir > 0 ? [12, 13, 14, 15, 16] : [-3, -2, -1, 0, 1];
+                const hand = dir > 0 ? 16 : -3;
+                for (const x of xs) {
+                    set(r1, x, x === hand ? "S" : "B");
+                    set(r1 + 1, x, x === hand ? "S" : "B");
+                    if (get(r1 - 1, x) === ".") set(r1 - 1, x, "K");
+                    if (get(r1 + 2, x) === ".") set(r1 + 2, x, "K")
+                }
+            }
+            return g;
+        }
+
+        function draw(cv, key, state, fr, dir) {
+            const c = CH[key],
+                g = build(c, state, fr, dir),
+                x = cv.getContext("2d");
+            if (cv.height !== g.length) cv.height = g.length;
+            x.clearRect(0, 0, cv.width, cv.height);
+            g.forEach((row, y) => row.forEach((k, i) => {
+                if (k !== ".") {
+                    x.fillStyle = c.pal[k] || BASE[k];
+                    x.fillRect(i, y, 1, 1)
+                }
+            }));
+        }
+
+        function sprite(cv, map, pal) {
+            const x = cv.getContext("2d");
+            x.clearRect(0, 0, cv.width, cv.height);
+            map.forEach((r, y) => [...r].forEach((k, i) => {
+                if (k !== ".") {
+                    x.fillStyle = pal[k];
+                    x.fillRect(i, y, 1, 1)
+                }
+            }))
+        }
+        const TEAR = ["....T....", "....T....", "...TTT...", "...TTT...", "..TTTTT..", ".TTTTTTT.", ".TTTTTTT.", ".TWTTTTT.", ".TTTTTTT.", "..TTTTT..", "...TTT..."];
+        const HEART = [".RR...RR.", "RWRR.RRRR", "RRRRRRRRR", "RRRRRRRRR", ".RRRRRRR.", "..RRRRR..", "...RRR...", "....R...."];
+        const PT = {
+                T: "#7cc8e8",
+                W: "#ffffff"
+            },
+            PH = {
+                R: "#ffffff",
+                W: "#ffd1dc"
+            };
+
+        const $ = id => document.getElementById(id);
+        let me = null,
+            other = null,
+            stg = 0,
+            fr = 0,
+            sa = "normal",
+            sb = "normal",
+            raf = 0,
+            t0 = 0,
+            tok = 0;
+        const a = $("a"),
+            b = $("b"),
+            btn = $("btn"),
+            cap = $("cap"),
+            bang = $("bang");
+        const later = (fn, ms) => {
+            const t = tok;
+            setTimeout(() => {
+                if (t === tok) fn()
+            }, ms)
+        };
+
+        document.querySelectorAll(".card").forEach(card => {
+            draw(card.querySelector("canvas"), card.dataset.k, "normal", 0);
+            card.onclick = () => start(card.dataset.k)
+        });
+
+        function start(k) {
+            tok++;
+            me = k;
+            other = k === "omar" ? "reaam" : "omar";
+            stg = 0;
+            sa = sb = "normal";
+            $("pick").hidden = true;
+            $("play").hidden = false;
+            $("back").hidden = true;
+            btn.hidden = false;
+            bang.hidden = true;
+            a.className = "char";
+            b.className = "char p";
+            a.style.transform = b.style.transform = "";
+            a.querySelector(".nm").textContent = CH[me].name;
+            b.querySelector(".nm").textContent = CH[other].name;
+            btn.className = "ring";
+            btn.style.setProperty("--p", 0);
+            sprite($("ico"), TEAR, PT);
+            cap.textContent = "Press and hold the tear";
+            document.querySelectorAll(".fh").forEach(e => e.remove());
+            render();
+        }
+
+        function render() {
+            draw(a.querySelector("canvas"), me, sa, fr, 1);
+            draw(b.querySelector("canvas"), other, sb, fr, -1)
+        }
+        setInterval(() => {
+            fr++;
+            if (me) render()
+        }, 240);
+
+        btn.addEventListener("pointerdown", e => {
+            e.preventDefault();
+            if (stg === 1) {
+                hug();
+                return
+            }
+            if (stg !== 0) return;
+            t0 = performance.now();
+            const loop = () => {
+                const p = Math.min(100, (performance.now() - t0) / 1300 * 100);
+                btn.style.setProperty("--p", p);
+                if (p >= 100) {
+                    cry();
+                    return
+                }
+                raf = requestAnimationFrame(loop)
+            };
+            raf = requestAnimationFrame(loop);
+        });
+        ["pointerup", "pointerleave", "pointercancel"].forEach(ev => btn.addEventListener(ev, () => {
+            if (stg === 0) {
+                cancelAnimationFrame(raf);
+                btn.style.setProperty("--p", 0)
+            }
+        }));
+        btn.addEventListener("contextmenu", e => e.preventDefault());
+
+        function cry() {
+            stg = 1;
+            sa = "cry";
+            sb = "away";
+            a.classList.add("cry");
+            btn.className = "ring heart";
+            btn.style.setProperty("--p", 0);
+            sprite($("ico"), HEART, PH);
+            cap.textContent = CH[me].name + " is crying... " + CH[other].name + " has no idea. Tap the heart.";
+            render();
+        }
+
+        function hug() {
+            stg = 2;
+            btn.hidden = true;
+            sb = "notice";
+            bang.hidden = false;
+            cap.textContent = CH[other].name + " noticed!";
+            render();
+            later(() => {
+                bang.hidden = true;
+                sb = "walk";
+                b.classList.add("walk");
+                const ra = a.querySelector("canvas").getBoundingClientRect(),
+                    rb = b.querySelector("canvas").getBoundingClientRect();
+                const sc = ra.width / 20;
+                b.style.transform = "translateX(" + ((ra.left + 9 * sc) - rb.left) + "px)";
+                cap.textContent = CH[other].name + " is running over...";
+            }, 900);
+            later(() => {
+                b.classList.remove("walk");
+
+                a.classList.add("cry");
+                b.classList.add("cry");
+
+
+                sa = "hugcry";
+                sb = "hugcry";
+
+                cap.textContent = CH[other].name + " hugs " + CH[me].name + " \uD83E\uDD0D";
+                [0, 500, 1000, 1500].forEach((d, i) => later(() => {
+                    const h = document.createElement("canvas");
+                    h.width = 9;
+                    h.height = 8;
+                    h.className = "fh";
+                    h.style.marginLeft = (i % 2 ? -30 : 10) + "px";
+                    sprite(h, HEART, {
+                        R: "#ff6f91",
+                        W: "#ffd1dc"
+                    });
+                    $("stage").appendChild(h);
+                    setTimeout(() => h.remove(), 2500)
+                }, 100 + d));
+                render();
+            }, 2300);
+            later(() => $("back").hidden = false, 3800);
+        }
+        $("back").onclick = () => {
+            tok++;
+            me = null;
+            $("play").hidden = true;
+            $("pick").hidden = false
+        };
+    </script>
+</body>
+
+</html>
